@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simpsons{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column min-vh-100" style="background-color: #f0f9ff;">
+        <nav class="navbar navbar-expand-lg py-1"
+             style="background-color: #f0f9ff;">
+
+            <div class="container-fluid d-flex align-items-center px-3">
+                <img
+                    src="{{ asset('images/tituloArriba.png') }}"
+                    alt="The Simpsons"
+                    class="me-auto mx-2 my-1"
+                    style="max-height: 45px;"
+                >
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="#" class="btn btn-outline-dark btn-sm px-3">Iniciar Sesión</a>
+                    <a href="#" class="btn btn-outline-dark btn-sm px-3">Registrarse</a>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-grow-1">
+            <div class="container-fluid p-0 position-relative"
+                 style="max-height: 93vh; overflow: hidden;">
+
+                <img
+                    src="{{ asset('images/fondoNubes.jpg') }}"
+                    alt="Fondo nubes"
+                    class="img-fluid w-100"
+                >
+
+                <div class="position-absolute top-50 start-50 translate-middle text-center">
+                    <img
+                        src="{{ asset('images/tituloSimpsons.png') }}"
+                        alt="The Simpsons API"
+                        class="img-fluid"
+                        style="max-width: 600px;"
+                    >
+                </div>
+            </div>
+
+            <section class="container my-5">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold">¡Bienvenido a Springfield! 🏡</h2>
+                    <p class="text-muted">
+                        Conoce a los cinco integrantes de la familia más famosa
+                        de la televisión.
+                    </p>
+                </div>
+
+                <div class="row g-4 justify-content-center mb-4">
+                    <div class="col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm text-center">
+                            <img src="{{ asset('images/homer.png') }}" class="card-img-top p-3"
+                                 alt="Homer Simpson" style="height: 220px; object-fit: contain;">
+                            <div class="card-body">
+                                <h5 class="card-title">Homer Simpson</h5>
+                                <p class="card-text">Amante de las rosquillas y la cerveza Duff.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm text-center">
+                            <img src="{{ asset('images/marge.png') }}" class="card-img-top p-3"
+                                 alt="Marge Simpson" style="height: 220px; object-fit: contain;">
+                            <div class="card-body">
+                                <h5 class="card-title">Marge Simpson</h5>
+                                <p class="card-text">El corazón y la paciencia de la familia.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm text-center">
+                            <img src="{{ asset('images/bart.png') }}" class="card-img-top p-3"
+                                 alt="Bart Simpson" style="height: 220px; object-fit: contain;">
+                            <div class="card-body">
+                                <h5 class="card-title">Bart Simpson</h5>
+                                <p class="card-text">Rebelde profesional y experto en travesuras.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 justify-content-center">
+                    <div class="col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm text-center">
+                            <img src="{{ asset('images/lisa.webp') }}" class="card-img-top p-3"
+                                 alt="Lisa Simpson" style="height: 220px; object-fit: contain;">
+                            <div class="card-body">
+                                <h5 class="card-title">Lisa Simpson</h5>
+                                <p class="card-text">Inteligente, sensible y amante del jazz.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm text-center">
+                            <img src="{{ asset('images/maggie.png') }}" class="card-img-top p-3"
+                                 alt="Maggie Simpson" style="height: 220px; object-fit: contain;">
+                            <div class="card-body">
+                                <h5 class="card-title">Maggie Simpson</h5>
+                                <p class="card-text">Pequeña, silenciosa… y peligrosa.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="mt-auto text-center py-3 bg-dark">
+            <div class="container">
+                <small class="text-light">
+                    © {{ "now"|date("Y") }} The Simpsons
+                </small>
+            </div>
+        </footer>
+    </div>
+{% endblock %}
