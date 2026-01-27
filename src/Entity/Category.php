@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ORM\Table(name: 'category', schema: 'simpsons')]
@@ -63,11 +64,23 @@ class Category
         return $this;
     }
 
-    public function addCharacter($character) {
+    public function addCharacter(Character $character): self
+    {
         if (!$this->characters->contains($character)) {
             $this->characters->add($character);
         }
 
         return $this;
+    }
+
+    public function removeCharacter(Character $character): self
+    {
+        $this->characters->removeElement($character);
+        return $this;
+    }
+
+    public function __construct()
+    {
+        $this->characters = new ArrayCollection();
     }
 }

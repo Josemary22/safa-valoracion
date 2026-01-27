@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Repository\CharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,37 +16,46 @@ final class CategoryController extends AbstractController
     #[Route('/category', name: 'categories')]
     public function index(Request $request,
                           CharacterRepository $characterRepository,
-                          EntityManagerInterface $entityManager): Response
-    {
+                          EntityManagerInterface $entityManager,
+                          PaginatorInterface $paginator
+    ): Response {
+        if ($request->isMethod('POST')) {
 
-        if($request->isMethod('GET')){
+            $category = new Category();
+            $category->setName($request->request->get('name'));
+            $category->setImage($request->request->get('image'));
 
-            $characters = $characterRepository->findAll();
+            $charactersSelected = $request->request->all('characters');
 
-            return $this->render('category/category.html.twig',[
-                'characters' => $characters,
-            ]);
-
-        }else{
-
-            $new_category = new Category();
-            $new_category->setName($request->request->get('name'));
-            $new_category->setImage($request->request->get('image'));
-
-            $characters_selected = $request->request->all('items');
-
-            foreach($characters_selected as $idCharacter){
-
-                $character = $characterRepository->find($idCharacter);
-                if($character){
-                    $new_category->addCharacter($character);
+            foreach ($charactersSelected as $id) {
+                $character = $characterRepository->find($id);
+                if ($character) {
+                    $category->addCharacter($character);
                 }
             }
 
-            $entityManager->persist($new_category);
+            $entityManager->persist($category);
             $entityManager->flush();
 
-            return $this->redirectToRoute('admin_site');
+            return $this->redirectToRoute('categories');
         }
+
+        $search = $request->query->get('search');
+        $qb = $characterRepository->getOrdenarCategoryPagina();
+
+        if ($search) {
+            $qb->andWhere('LOWER(c.name) LIKE :search')
+                ->setParameter('search', '%' . strtolower($search) . '%');
+        }
+
+        $characters = $paginator->paginate(
+            $qb,
+            $request->query->getInt('page', 1),
+            12
+        );
+
+        return $this->render('category/category.html.twig', [
+            'characters' => $characters,
+        ]);
     }
 }

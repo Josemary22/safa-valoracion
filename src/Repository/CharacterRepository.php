@@ -16,6 +16,12 @@ class CharacterRepository extends ServiceEntityRepository
         parent::__construct($registry, Character::class);
     }
 
+    public function getOrdenarCategoryPagina()
+    {
+        return $this->createQueryBuilder('c')
+            ->orderBy('c.id', 'ASC');
+    }
+
 //    /**
 //     * @return CharacterGot[] Returns an array of CharacterGot objects
 //     */
