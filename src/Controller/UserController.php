@@ -22,6 +22,7 @@ final class UserController extends AbstractController
             $new_user = new User();
             $new_user->setUsername($request->request->get('username'));
             $new_user->setEmail($request->request->get('email'));
+            $new_user->setRole(['ROLE_USER']);
             $password_text = $request->request->get('password');
 
             $hashedPassword = $passwordHasher->hashPassword(
@@ -34,8 +35,7 @@ final class UserController extends AbstractController
             $entityManager->persist($new_user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_home');
-
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('user/register.html.twig', [

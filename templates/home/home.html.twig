@@ -16,9 +16,17 @@
                             style="max-height: 45px;"
                         >
                         {% if app.user %}
+                            <a href="{{ path('app_cargarDatos') }}"
+                               class="text-dark text-decoration-none fw-semibold ms-3">
+                                Cargar datos
+                            </a>
                             <a href="{{ path('categories') }}"
                                class="text-dark text-decoration-none fw-semibold ms-3">
                                 Crear categoría
+                            </a>
+                            <a href="{{ path('app_categoryRanking') }}"
+                               class="text-dark text-decoration-none fw-semibold ms-3">
+                                Rankings
                             </a>
                         {% endif %}
                     </div>

@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ranking{% endblock %}
+
+{% block body %}
+    <form method="POST" action="{{ path('ranking_create', { id: category.id }) }}" data-turbo="false" class="d-flex flex-column min-vh-100" style="background-color: white;">
+        <nav class="navbar navbar-expand-lg py-1" style="background-color: #f0f9ff;">
+            <div class="container-fluid d-flex align-items-center px-3">
+                <img
+                    src="{{ asset('images/tituloArriba.png') }}"
+                    alt="The Simpsons"
+                    class="me-auto mx-2 my-1"
+                    style="max-height: 45px;"
+                >
+            </div>
+        </nav>
+
+        <h2 class="text-center display-4 my-4">
+            Ranking
+        </h2>
+
+        <h2 class="text-center my-4">
+            {{ category.name }}
+        </h2>
+
+        <div class="container" style="margin-bottom: 30px">
+            <div class="mx-auto" style="max-width: 600px;">
+                {% for i in 1..characters|length %}
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="bg-dark text-white rounded-circle d-flex
+                            align-items-center justify-content-center me-3"
+                             style="width: 40px; height: 40px;">
+                            {{ i }}
+                        </div>
+
+                        <div class="border border-2 border-secondary rounded
+                            flex-grow-1 p-2 bg-light dropzone"
+                             data-position="{{ i }}"
+                             style="min-height: 48px;">
+
+                            <input type="hidden" name="ranking[{{ i }}]" value="">
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <hr class="my-4">
+
+            <h4 class="text-center mb-3">Personajes</h4>
+            <div id="characters-pool"
+                 class="dropzone d-flex flex-wrap justify-content-center gap-3 mb-3">
+
+                {% for character in characters %}
+                    <div class="card shadow" style="cursor: grab;width: 90px;border-radius: 15px;border: 2px solid #FFD90F;" data-id="{{ character.id }}">
+                        <img src="https://cdn.thesimpsonsapi.com/500{{ character.portraitPath }}"
+                             class="img-fluid"
+                             alt="{{ character.name }}"
+                             title="{{ character.name }}"
+                             style="height: 90px;
+                            object-fit: contain;
+                            background-color: white;
+                            border-radius: 15px;">
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+        <div class="container text-center mb-4">
+            <button type="submit" class="btn btn-primary btn-lg px-5">
+                Enviar Ranking
+            </button>
+        </div>
+    </form>
+        <footer class="mt-auto text-center py-3 bg-dark">
+            <div class="container">
+                <small class="text-light">
+                    © {{ "now"|date("Y") }} The Simpsons
+                </small>
+            </div>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script>
+        document.querySelectorAll('.dropzone').forEach(zone => {
+            new Sortable(zone, {
+                group: 'ranking',
+                animation: 150,
+                sort: false,
+                onAdd: function (evt) {
+                    const dropzone = evt.to;
+                    if (dropzone.querySelectorAll('.card').length > 1) {
+                        evt.from.appendChild(evt.item);
+                        return;
+                    }
+                    const characterId = evt.item.dataset.id;
+                    const input = dropzone.querySelector('input[type="hidden"]');
+                    if (input) {
+                        input.value = characterId;
+                    }
+                },
+                onRemove: function (evt) {
+                    const input = evt.from.querySelector('input[type="hidden"]');
+                    if (input) {
+                        input.value = '';
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -18,7 +18,7 @@ final class AdminController extends AbstractController
         return $this->render('admin/admin.html.twig');
     }
 
-    #[Route('/admin/character/load', name: 'admin_site')]
+    #[Route('/admin/character/load', name: 'app_cargarDatos')]
     public function data_load(HttpClientInterface $httpClient, EntityManagerInterface $entityManager): Response
     {
         $url = 'https://thesimpsonsapi.com/api/characters';
@@ -68,7 +68,7 @@ final class AdminController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->render('admin/admin.html.twig', [
+        return $this->render('admin/cargarDatos.html.twig', [
             'controller_name' => 'AdminController',
         ]);
     }

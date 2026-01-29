@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carga completada{% endblock %}
+
+{% block body %}
+    <div class="container-fluid min-vh-100 d-flex flex-column justify-content-center align-items-center text-center" style="background-color: #f0f9ff;">
+        <h1 class="fw-bold display-4 mb-4 text-success">
+            ¡Se han cargado los datos correctamente!
+        </h1>
+
+        <img
+            src="{{ asset('images/imagenGuardarDatos.png') }}"
+            alt="Los Simpson celebrando"
+            class="img-fluid"
+            style="width: 80vw; max-width: 500px;"
+        >
+    </div>
+{% endblock %}

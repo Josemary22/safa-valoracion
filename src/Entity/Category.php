@@ -73,6 +73,11 @@ class Category
         return $this;
     }
 
+    public function getCharacters(): Collection
+    {
+        return $this->characters;
+    }
+
     public function removeCharacter(Character $character): self
     {
         $this->characters->removeElement($character);
