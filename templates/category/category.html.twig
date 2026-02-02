@@ -31,10 +31,6 @@
             >
         </form>
 
-        {% for mensaje in app.flashes('success') %}
-            <div class="alert alert-success">{{ mensaje }}</div>
-        {% endfor %}
-
         <form method="POST">
             <div class="container">
                 <div class="card mb-5 shadow-sm">

@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reseñas{% endblock %}
+
+{% block body %}
+    <div data-turbo="false" class="d-flex flex-column min-vh-100" style="background-color: white;">
+        <nav class="navbar navbar-expand-lg py-1"
+             style="background-color: #f0f9ff;">
+
+            <div class="container-fluid d-flex align-items-center px-3">
+                <img
+                    src="{{ asset('images/tituloArriba.png') }}"
+                    alt="The Simpsons"
+                    class="me-auto mx-2 my-1"
+                    style="max-height: 45px;"
+                >
+            </div>
+        </nav>
+
+        <h2 class="text-center display-4 my-4">
+            Reseñas
+        </h2>
+
+        <form method="GET" class="d-flex justify-content-center mb-4">
+            <input
+                type="text"
+                name="search"
+                class="form-control w-50"
+                placeholder="Buscar personaje..."
+                value="{{ app.request.query.get('search') }}"
+            >
+        </form>
+
+        <div class="container">
+            <h4 class="mb-4 fw-semibold">Personajes</h4>
+            <div class="row g-4">
+                {% for item in characters %}
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm">
+                            <img
+                                src="https://cdn.thesimpsonsapi.com/500{{ item.portraitPath }}"
+                                class="card-img-top"
+                                alt="{{ item.name }}"
+                                loading="lazy"
+                                style="height: 250px; object-fit: cover;"
+                            >
+
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-bold">
+                                    {{ item.name }}
+                                </h5>
+
+                                <p class="card-text text-muted">
+                                    {{ item.occupation }}
+                                </p>
+                            </div>
+
+                            <div class="card-footer text-center bg-white border-0">
+                                <a
+                                    href="{{ path('app_review', { id: item.id }) }}"
+                                    class="btn btn-outline-primary"
+                                >
+                                    Reseña
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            {{ knp_pagination_render(characters, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig') }}
+        </div>
+
+        <footer class="mt-auto text-center py-3 bg-dark">
+            <div class="container">
+                <small class="text-light">
+                    © {{ "now"|date("Y") }} The Simpsons
+                </small>
+            </div>
+        </footer>
+    </div>
+{% endblock %}
