@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Categoría Ranking{% endblock %}
+{% block title %}Estadísticas{% endblock %}
 
 {% block body %}
-    <div data-turbo="false" class="d-flex flex-column min-vh-100" style="background-color: white;">
+    <div class="d-flex flex-column min-vh-100" style="background-color: white;">
         <nav class="navbar navbar-expand-lg py-1" style="background-color: #f0f9ff;">
             <div class="container-fluid d-flex align-items-center px-3">
                 <div class="container-fluid d-flex align-items-center px-3">
@@ -73,48 +73,41 @@
             </div>
         </nav>
 
-        <h2 class="text-center display-4 my-4">
-            Categorías
-        </h2>
+        <h2 class="text-center display-4 my-4">Estadísticas</h2>
+        <h2 class="text-center my-4">{{ category.name }}</h2>
 
-        <div class="container mb-5" style="margin-top: 30px">
-            <div class="row g-4">
-                {% for categoria in categorias %}
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                        <a href="{{ path('app_ranking', { id: categoria.id }) }}"
-                           class="text-decoration-none text-dark">
-                            <div class="card h-100 shadow-sm border-0" style="cursor: pointer;">
-                                <img
-                                    src="{{ categoria.image }}"
-                                    class="card-img-top"
-                                    alt="{{ categoria.name }}"
-                                    style="height: 320px; object-fit: cover;"
-                                >
+        <div class="container mb-5">
+            <div class="mx-auto" style="max-width: 600px;">
 
-                                <div class="card-body text-center">
-                                    <h5 class="card-title fw-bold">
-                                        {{ categoria.name }}
-                                    </h5>
-                                </div>
+                {% for item in characters %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                             style="width: 40px; height: 40px;">
+                            {{ loop.index }}
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 border rounded p-2 bg-light flex-grow-1">
+                            <img src="https://cdn.thesimpsonsapi.com/500{{ item.portrait }}"
+                                 style="height: 60px">
+
+                            <div class="fs-4">
+                                {{ item.character_name }}
                             </div>
-                        </a>
+                        </div>
                     </div>
                 {% else %}
-                    <div class="col-12 d-flex justify-content-center align-items-center" style="min-height: 50vh;">
-                        <p class="fw-bold display-5 text-center text-muted">
-                            No hay categorías disponibles
-                        </p>
+                    <div class="alert alert-warning text-center mt-4">
+                        Nadie ha hecho el ranking de esta categoría todavía
                     </div>
                 {% endfor %}
+
             </div>
         </div>
 
         <footer class="mt-auto text-center py-3 bg-dark">
-            <div class="container">
-                <small class="text-light">
-                    © {{ "now"|date("Y") }} The Simpsons
-                </small>
-            </div>
+            <small class="text-light">
+                © {{ "now"|date("Y") }} The Simpsons
+            </small>
         </footer>
     </div>
 {% endblock %}

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Category;
 use App\Entity\RankingCharacter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,6 +15,25 @@ class RankingCharacterRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, RankingCharacter::class);
+    }
+
+    public function ordenarRankingEstadisticas(Category $category): array
+    {
+        return $this->createQueryBuilder('rc')
+            ->select([
+                'c.id AS character_id',
+                'c.name AS character_name',
+                'c.portrait_path AS portrait',
+                'AVG(rc.position) AS avgPosition'
+            ])
+            ->innerJoin('rc.character', 'c')
+            ->innerJoin('rc.ranking', 'r')
+            ->where('r.category = :category')
+            ->setParameter('category', $category)
+            ->groupBy('c.id, c.name, c.portrait_path')
+            ->orderBy('avgPosition', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
     }
 
 //    /**
