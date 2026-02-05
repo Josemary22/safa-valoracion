@@ -16,52 +16,60 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ReviewController extends AbstractController
 {
     #[Route('/review/{id}', name: 'app_review')]
-    public function index(
-        Character $character,
-        Request $request,
-        EntityManagerInterface $em
+    public function index(Character $character, Request $request, EntityManagerInterface $em
     ): Response {
+        $user = $this->getUser();
+
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $review = $em->getRepository(Review::class)->findOneBy([
+            'user' => $user,
+            'character' => $character,
+        ]);
 
         if ($request->isMethod('POST')) {
-
             $stars = (int) $request->request->get('stars');
-            $comment = $request->request->get('comment');
+            $comment = trim($request->request->get('comment'));
 
-            if ($request->isMethod('POST')) {
-                $stars = (int) $request->request->get('stars');
-                $comment = $request->request->get('comment');
+            if (!$review) {
+                $review = new Review();
+                $review->setUser($user);
+                $review->setCharacter($character);
+                $em->persist($review);
 
-                if ($stars > 0 && $comment) {
-                    $review = new Review();
-                    $review->setStars($stars);
-                    $review->setComment($comment);
-                    $review->setCharacter($character);
-                    $review->setUser($this->getUser());
-
-                    $em->persist($review);
-                    $em->flush();
-
-                    return $this->redirectToRoute('app_review', [
-                        'id' => $character->getId()
-                    ]);
-                }
+                $isNew = true;
+            } else {
+                $isNew = false;
             }
+
+            $review->setStars($stars);
+            $review->setComment($comment);
+            $em->flush();
+
+            return $this->redirectToRoute('app_review', [
+                'id' => $character->getId(),
+                'edit' => 1
+            ]);
         }
 
         $reviews = $character->getReviews();
-
         $totalStars = 0;
-        $countReviews = count($reviews);
 
-        foreach ($reviews as $review) {
-            $totalStars += $review->getStars();
+        foreach ($reviews as $r) {
+            $totalStars += $r->getStars();
         }
 
-        $averageStars = $countReviews > 0 ? round($totalStars / $countReviews, 1) : 0;
+        $countReviews = count($reviews);
+        $averageStars = $countReviews > 0
+            ? round($totalStars / $countReviews, 1)
+            : 0;
 
         return $this->render('review/review.html.twig', [
             'character' => $character,
             'averageStars' => $averageStars,
+            'userReview' => $review,
         ]);
     }
 

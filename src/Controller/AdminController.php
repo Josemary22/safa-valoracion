@@ -13,12 +13,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class AdminController extends AbstractController
 {
-    #[Route('/admin', name: 'admin_site')]
-    public function index(): Response
-    {
-        return $this->render('admin/admin.html.twig');
-    }
-
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/admin/character/load', name: 'app_cargarDatos')]
     public function data_load(HttpClientInterface $httpClient, EntityManagerInterface $entityManager): Response

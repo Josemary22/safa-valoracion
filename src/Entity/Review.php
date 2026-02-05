@@ -6,7 +6,7 @@ use App\Repository\ReviewRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
-#[ORM\Table(name: 'review', schema: 'simpsons')]
+#[ORM\Table(name: 'review', schema: 'simpsons', uniqueConstraints: [new ORM\UniqueConstraint(name: 'user_character_unique', columns: ['user_id', 'character_id'])])]
 class Review
 {
     #[ORM\Id]

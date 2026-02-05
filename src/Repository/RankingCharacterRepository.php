@@ -24,7 +24,8 @@ class RankingCharacterRepository extends ServiceEntityRepository
                 'c.id AS character_id',
                 'c.name AS character_name',
                 'c.portrait_path AS portrait',
-                'AVG(rc.position) AS avgPosition'
+                'AVG(rc.position) AS avgPosition',
+                'COUNT(rc.id) AS totalRankings'
             ])
             ->innerJoin('rc.character', 'c')
             ->innerJoin('rc.ranking', 'r')

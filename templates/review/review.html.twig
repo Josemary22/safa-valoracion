@@ -3,72 +3,56 @@
 {% block title %}Reseñas{% endblock %}
 
 {% block body %}
+    {% set editMode = app.request.query.has('edit') %}
     <div style="background: linear-gradient(#87CEEB, #fff); min-height: 100vh;">
         <nav class="navbar navbar-expand-lg py-1" style="background-color: #f0f9ff;">
             <div class="container-fluid d-flex align-items-center px-3">
-                <div class="container-fluid d-flex align-items-center px-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <img
-                            src="{{ asset('images/tituloArriba.png') }}"
-                            alt="The Simpsons"
-                            style="max-height: 45px;"
-                        >
+                <div class="d-flex align-items-center gap-3">
+                    <img src="{{ asset('images/tituloArriba.png') }}"
+                         alt="The Simpsons"
+                         style="max-height: 45px;">
 
-                        {% if app.user %}
-                            <a href="{{ path('app_home') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Inicio
-                            </a>
-                        {% endif %}
+                    {% if app.user %}
+                        <a href="{{ path('app_home') }}" class="text-dark text-decoration-none fw-semibold ms-3">
+                            Inicio
+                        </a>
+                    {% endif %}
 
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path('app_cargarDatos') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Cargar datos
-                            </a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_cargarDatos') }}" class="text-dark text-decoration-none fw-semibold ms-3">
+                            Cargar datos
+                        </a>
+                        <a href="{{ path('categories') }}" class="text-dark text-decoration-none fw-semibold ms-3">
+                            Crear categoría
+                        </a>
+                    {% endif %}
 
-                            <a href="{{ path('categories') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Crear categoría
-                            </a>
-                        {% endif %}
+                    {% if is_granted('ROLE_USER') %}
+                        <a href="{{ path('app_categoryRanking') }}" class="text-dark text-decoration-none fw-semibold ms-3">
+                            Rankings
+                        </a>
+                        <a href="{{ path('app_reviewCharacter') }}" class="text-dark text-decoration-none fw-semibold ms-3">
+                            Reseñas
+                        </a>
+                        <a href="{{ path('app_categoryEstadisticas') }}" class="text-dark text-decoration-none fw-semibold ms-3">
+                            Estadísticas
+                        </a>
+                    {% endif %}
+                </div>
 
-                        {% if is_granted('ROLE_USER') %}
-                            <a href="{{ path('app_categoryRanking') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Rankings
-                            </a>
-
-                            <a href="{{ path('app_reviewCharacter') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Reseñas
-                            </a>
-
-                            <a href="{{ path('app_categoryEstadisticas') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Estadisticas
-                            </a>
-                        {% endif %}
-                    </div>
-
-                    <div class="ms-auto d-flex align-items-center gap-3">
-                        {% if app.user %}
-                            <a href="{{ path('app_logout') }}"
-                               class="btn btn-outline-danger btn-sm px-3">
-                                Cerrar sesión
-                            </a>
-                        {% else %}
-                            <a href="{{ path('app_login') }}"
-                               class="btn btn-outline-dark btn-sm px-3">
-                                Iniciar Sesión
-                            </a>
-
-                            <a href="{{ path('app_register') }}"
-                               class="btn btn-outline-dark btn-sm px-3">
-                                Registrarse
-                            </a>
-                        {% endif %}
-                    </div>
+                <div class="ms-auto d-flex align-items-center gap-3">
+                    {% if app.user %}
+                        <a href="{{ path('app_logout') }}" class="btn btn-outline-danger btn-sm px-3">
+                            Cerrar sesión
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-dark btn-sm px-3">
+                            Iniciar Sesión
+                        </a>
+                        <a href="{{ path('app_register') }}" class="btn btn-outline-dark btn-sm px-3">
+                            Registrarse
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </nav>
@@ -79,137 +63,138 @@
                     {% if averageStars > 0 %}
                         <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center shadow"
                              style="width:70px; height:70px;">
-                            <span class="fw-bold fs-4">
-                                {{ averageStars|number_format(1, '.', '') }}/5
-                            </span>
+                            <span class="fw-bold fs-4">{{ averageStars }}/5</span>
                         </div>
                     {% else %}
                         <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow text-center"
-                             style="width:70px; height:70px; line-height:1;">
+                             style="width:70px; height:70px;">
                             <small class="fw-bold">Sin<br>nota</small>
                         </div>
                     {% endif %}
                 </div>
 
                 <div class="row g-0 align-items-center">
-                    <div class="col-md-4 d-flex justify-content-center align-items-center p-4">
+                    <div class="col-md-4 d-flex justify-content-center p-4">
                         <img src="https://cdn.thesimpsonsapi.com/500{{ character.portraitPath }}"
                              class="img-fluid rounded"
-                             alt="{{ character.name }}"
-                             style="max-height:340px; object-fit:contain;">
+                             style="max-height:340px;">
                     </div>
 
                     <div class="col-md-8">
                         <div class="card-body py-4 pe-4">
-                            <h1 class="fw-bold text-primary mb-2">
-                                {{ character.name }}
-                            </h1>
-                            <p class="text-muted fs-4 mb-2">
-                                {{ character.occupation }}
-                            </p>
+                            <h1 class="fw-bold text-primary mb-2">{{ character.name }}</h1>
+                            <p class="text-muted fs-4 mb-2">{{ character.occupation }}</p>
                             <span class="badge bg-warning text-dark fs-6 mb-3">{{ character.status }}</span>
 
-                            <div class="card shadow border-0 mt-3 mb-2" style="border-radius:20px;">
-                                <div class="card-body py-3">
-                                    <h4 class="fw-bold mb-3 text-dark">Frases míticas</h4>
+                            <div class="card shadow border-0 mt-3" style="border-radius:20px;">
+                                <div class="card-body">
+                                    <h4 class="fw-bold mb-3">Frases míticas</h4>
 
                                     {% set phrases = character.phrases|slice(0,5) %}
-
-                                    {% if phrases|length > 0 %}
+                                    {% if phrases|length %}
                                         <ul class="list-group list-group-flush">
                                             {% for phrase in phrases %}
-                                                <li class="list-group-item fs-5 py-2">
-                                                    “{{ phrase.phrase }}”
-                                                </li>
+                                                <li class="list-group-item fs-5">“{{ phrase.phrase }}”</li>
                                             {% endfor %}
                                         </ul>
                                     {% else %}
-                                        <p class="text-muted mb-0">
-                                            Este personaje aún no tiene frases guardadas.
-                                        </p>
+                                        <p class="text-muted">Este personaje aún no tiene frases.</p>
                                     {% endif %}
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card shadow border-0 mb-4" style="border-radius:25px;">
-                <div class="card-body p-4">
-                    <h4 class="mb-3 fw-bold text-dark">Escribe tu reseña</h4>
-
-                    <form method="post" action="{{ path('app_review', { id: character.id }) }}">
-                        <input type="hidden" name="character_id" value="{{ character.id }}">
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold fs-5">Puntuación</label>
+            {% if app.user %}
+                <div class="card shadow border-0 mb-4" style="border-radius:25px;">
+                    <div class="card-body p-4">
+                        <h4 class="mb-3 fw-bold text-dark">Escribe tu reseña</h4>
+                        <form method="post" action="{{ path('app_review', { id: character.id }) }}">
                             <div id="stars" class="fs-1 text-warning">
                                 {% for i in 1..5 %}
-                                    <span class="star" data-value="{{ i }}" style="cursor:pointer;">☆</span>
+                                    <span class="star" data-value="{{ i }}" style="cursor:pointer;">
+                                        {% if userReview and i <= userReview.stars %}
+                                            ★
+                                        {% else %}
+                                            ☆
+                                        {% endif %}
+                                    </span>
                                 {% endfor %}
                             </div>
-                            <input type="hidden" name="stars" id="starsInput">
-                        </div>
-
-                        <div class="mb-3">
-                            <textarea name="comment"
-                                      class="form-control"
-                                      rows="4"
-                                      placeholder="¿Qué opinas de este personaje?"
-                                      required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary fw-bold px-4 py-2">
-                            Enviar reseña
-                        </button>
-                    </form>
+                            <input type="hidden" name="stars" id="starsInput" value="{{ userReview ? userReview.stars : '' }}">
+                            <div class="mb-3">
+                                <textarea name="comment" class="form-control" rows="4" required placeholder="¿Qué opinas de este personaje?">{% if editMode and userReview %}{{ userReview.comment }}{% endif %}</textarea>
+                            </div>
+                            {% if not userReview %}
+                                <button type="submit" class="btn btn-primary fw-bold px-4 py-2">
+                                    Enviar reseña
+                                </button>
+                            {% elseif editMode %}
+                                <button type="submit" class="btn btn-primary fw-bold px-4 py-2">
+                                    Editar reseña
+                                </button>
+                            {% else %}
+                                <a href="{{ path('app_review', { id: character.id, edit: 1 }) }}"
+                                   class="btn btn-primary fw-bold px-4 py-2"
+                                   onclick="forceReload(event)">
+                                    Editar reseña
+                                </a>
+                            {% endif %}
+                        </form>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
 
             <h4 class="fw-bold mb-3">Comentarios de otros fans</h4>
             {% for review in character.reviews %}
                 <div class="card mb-3 shadow-sm border-0" style="border-radius:18px;">
                     <div class="card-body p-3">
-
                         <div class="mb-2 text-warning fs-4">
                             {% for i in 1..5 %}
-                                {% if i <= review.stars %}
-                                    ★
-                                {% else %}
-                                    ☆
-                                {% endif %}
+                                {{ i <= review.stars ? '★' : '☆' }}
                             {% endfor %}
                         </div>
-
-                        <p class="mb-1 fs-5">{{ review.comment }}</p>
-
-                        <small class="text-muted">
-                            Por {{ review.user.username }}
-                        </small>
+                        <p class="fs-5 mb-1">{{ review.comment }}</p>
+                        <small class="text-muted">Por {{ review.user.username }}</small>
                     </div>
                 </div>
             {% else %}
-                <p class="text-muted">Todavía no hay reseñas. ¡Sé el primero!</p>
+                <p class="text-muted">Todavía no hay reseñas.</p>
             {% endfor %}
-
         </div>
+        <footer class="mt-auto text-center py-3 bg-dark">
+            <div class="container">
+                <small class="text-light">
+                    © {{ "now"|date("Y") }} The Simpsons
+                </small>
+            </div>
+        </footer>
     </div>
 
     <script>
-        const stars = document.querySelectorAll('.star');
-        const input = document.getElementById('starsInput');
+        (function () {
+            const stars = document.querySelectorAll('.star');
+            const input = document.getElementById('starsInput');
 
-        stars.forEach(star => {
-            star.addEventListener('click', () => {
-                const value = star.dataset.value;
-                input.value = value;
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const value = star.dataset.value;
+                    input.value = value;
 
-                stars.forEach(s => {
-                    s.textContent = s.dataset.value <= value ? '★' : '☆';
+                    stars.forEach(s => {
+                        s.textContent = s.dataset.value <= value ? '★' : '☆';
+                    });
                 });
             });
-        });
+        })();
+
+        function forceReload(e) {
+            e.preventDefault();
+            const url = e.currentTarget.href;
+
+            window.location.href = url + '&reload=' + Date.now();
+        }
     </script>
 {% endblock %}

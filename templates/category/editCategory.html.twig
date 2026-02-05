@@ -1,0 +1,220 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar categoría{% endblock %}
+
+{% block body %}
+    <div data-turbo="false" class="d-flex flex-column min-vh-100" style="background-color: white;">
+        <nav class="navbar navbar-expand-lg py-1" style="background-color: #f0f9ff;">
+            <div class="container-fluid d-flex align-items-center px-3">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="{{ asset('images/tituloArriba.png') }}" alt="The Simpsons" style="max-height: 45px;">
+
+                    {% if app.user %}
+                        <a href="{{ path('app_home') }}" class="text-dark text-decoration-none fw-semibold ms-3">Inicio</a>
+                    {% endif %}
+
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_cargarDatos') }}" class="text-dark text-decoration-none fw-semibold ms-3">Cargar datos</a>
+                        <a href="{{ path('categories') }}" class="text-dark text-decoration-none fw-semibold ms-3">Editar categoría</a>
+                    {% endif %}
+
+                    {% if is_granted('ROLE_USER') %}
+                        <a href="{{ path('app_categoryRanking') }}" class="text-dark text-decoration-none fw-semibold ms-3">Rankings</a>
+                        <a href="{{ path('app_reviewCharacter') }}" class="text-dark text-decoration-none fw-semibold ms-3">Reseñas</a>
+                        <a href="{{ path('app_categoryEstadisticas') }}" class="text-dark text-decoration-none fw-semibold ms-3">Estadísticas</a>
+                    {% endif %}
+                </div>
+
+                <div class="ms-auto">
+                    <a href="{{ path('app_logout') }}" class="btn btn-outline-danger btn-sm px-3">Cerrar sesión</a>
+                </div>
+            </div>
+        </nav>
+
+        <h2 class="text-center display-4 my-4">Editar una categoría</h2>
+        <form method="GET" class="d-flex justify-content-center mb-4">
+            <input
+                type="text"
+                name="search"
+                class="form-control w-50"
+                placeholder="Buscar personaje..."
+                value="{{ app.request.query.get('search') }}"
+            >
+        </form>
+        <form method="POST">
+            <div class="container">
+                <div class="card mb-5 shadow-sm">
+                    <div class="card-body">
+
+                        <h4 class="mb-4 fw-semibold">Datos de la categoría</h4>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nombre de la categoría</label>
+                            <input
+                                type="text"
+                                name="name"
+                                id="category-name"
+                                class="form-control"
+                                placeholder="Ej: Familia Simpson"
+                                value="{{ category.name }}"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">URL de la imagen</label>
+                            <input
+                                type="url"
+                                name="image"
+                                id="category-image"
+                                class="form-control"
+                                placeholder="https://en.wikipedia.org/wiki/Bart_Simpson"
+                                value="{{ category.image }}"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Personajes seleccionados</label>
+                            <ul id="selected-characters" class="list-group"></ul>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 mb-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            Guardar cambios
+                        </button>
+
+                        <button type="button" id="btn-clear-category" class="btn btn-danger btn-lg px-5">
+                            Borrar datos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <h4 class="mb-4 fw-semibold">Personajes</h4>
+                <div class="row g-4">
+                    {% for item in characters %}
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="card h-100 shadow-sm">
+                                <img
+                                    src="https://cdn.thesimpsonsapi.com/500{{ item.portraitPath }}"
+                                    class="card-img-top"
+                                    alt="{{ item.name }}"
+                                    style="height: 250px; object-fit: cover;"
+                                >
+
+                                <div class="card-body text-center">
+                                    <h5 class="card-title fw-bold">{{ item.name }}</h5>
+                                    <p class="card-text text-muted">{{ item.occupation }}</p>
+                                </div>
+
+                                <div class="card-footer text-center bg-white border-0">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-primary btn-add"
+                                        data-id="{{ item.id }}"
+                                        data-name="{{ item.name }}"
+                                    >
+                                        Añadir
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </form>
+
+        <div class="d-flex justify-content-center mt-4">
+            {{ knp_pagination_render(characters, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig') }}
+        </div>
+
+        <footer class="mt-auto text-center py-3 bg-dark">
+            <small class="text-light">© {{ "now"|date("Y") }} The Simpsons</small>
+        </footer>
+    </div>
+    <script>
+        const selectedList = document.getElementById('selected-characters');
+
+        const state = {
+            characters: [
+                {% for c in category.characters %}
+                { id: '{{ c.id }}', name: '{{ c.name|e('js') }}' },
+                {% endfor %}
+            ]
+        };
+
+        state.characters.forEach(c => renderCharacter(c.id, c.name));
+        syncButtons();
+
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.btn-add');
+            if (!btn) return;
+
+            const id = btn.dataset.id;
+            const name = btn.dataset.name;
+
+            const index = state.characters.findIndex(c => c.id === id);
+
+            if (index !== -1) {
+                state.characters.splice(index, 1);
+                removeCharacter(id);
+            } else {
+                state.characters.push({ id, name });
+                renderCharacter(id, name);
+            }
+
+            syncButtons();
+        });
+
+        function renderCharacter(id, name) {
+            if (document.getElementById(`char-${id}`)) return;
+
+            const li = document.createElement('li');
+            li.id = `char-${id}`;
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.textContent = name;
+
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'characters[]';
+            input.value = id;
+
+            li.appendChild(input);
+            selectedList.appendChild(li);
+        }
+
+        function removeCharacter(id) {
+            document.getElementById(`char-${id}`)?.remove();
+        }
+
+        function syncButtons() {
+            document.querySelectorAll('.btn-add').forEach(btn => {
+                const id = btn.dataset.id;
+                const selected = state.characters.some(c => c.id === id);
+
+                btn.textContent = selected ? 'Quitar' : 'Añadir';
+                btn.classList.toggle('btn-danger', selected);
+                btn.classList.toggle('btn-outline-primary', !selected);
+            });
+        }
+
+        document.getElementById('btn-clear-category').addEventListener('click', () => {
+            if (!confirm('¿Seguro que quieres borrar los datos del formulario?')) return;
+
+            state.characters = [];
+            selectedList.innerHTML = '';
+
+            document.querySelectorAll('.btn-add').forEach(btn => {
+                btn.textContent = 'Añadir';
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-outline-primary');
+            });
+
+            document.getElementById('category-name').value = '';
+            document.getElementById('category-image').value = '';
+        });
+    </script>
+{% endblock %}
