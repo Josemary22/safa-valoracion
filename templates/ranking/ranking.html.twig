@@ -3,72 +3,81 @@
 {% block title %}Ranking{% endblock %}
 
 {% block body %}
-    <form method="POST" action="{{ path('ranking_create', { id: category.id }) }}" data-turbo="false" class="d-flex flex-column min-vh-100" style="background-color: white;">
+    <form method="POST"
+          action="{% if userRanking %}
+                 {{ path('ranking_update', { id: userRanking.id }) }}
+              {% else %}
+                 {{ path('ranking_create', { id: category.id }) }}
+              {% endif %}"
+          data-turbo="false"
+          class="d-flex flex-column min-vh-100"
+          style="background-color: white;">
+
         <nav class="navbar navbar-expand-lg py-1" style="background-color: #f0f9ff;">
             <div class="container-fluid d-flex align-items-center px-3">
-                <div class="container-fluid d-flex align-items-center px-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <img
-                            src="{{ asset('images/tituloArriba.png') }}"
-                            alt="The Simpsons"
-                            style="max-height: 45px;"
-                        >
+                <div class="d-flex align-items-center gap-3">
+                    <img src="{{ asset('images/tituloArriba.png') }}"
+                         alt="The Simpsons"
+                         style="max-height: 45px;">
 
-                        {% if app.user %}
-                            <a href="{{ path('app_home') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Inicio
-                            </a>
-                        {% endif %}
+                    {% if app.user %}
+                        <a href="{{ path('app_home') }}"
+                           class="text-dark text-decoration-none fw-semibold ms-3">
+                            Inicio
+                        </a>
+                    {% endif %}
 
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path('app_cargarDatos') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Cargar datos
-                            </a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_cargarDatos') }}"
+                           class="text-dark text-decoration-none fw-semibold ms-3">
+                            Cargar datos
+                        </a>
 
-                            <a href="{{ path('categories') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Crear categoría
-                            </a>
-                        {% endif %}
+                        <a href="{{ path('categories') }}"
+                           class="text-dark text-decoration-none fw-semibold ms-3">
+                            Crear categoría
+                        </a>
 
-                        {% if is_granted('ROLE_USER') %}
-                            <a href="{{ path('app_categoryRanking') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Rankings
-                            </a>
+                        <a href="{{ path('app_admin_panel') }}" class="text-dark text-decoration-none fw-semibold ms-3">
+                            Panel Administración
+                        </a>
+                    {% endif %}
 
-                            <a href="{{ path('app_reviewCharacter') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Reseñas
-                            </a>
+                    {% if is_granted('ROLE_USER') %}
+                        <a href="{{ path('app_categoryRanking') }}"
+                           class="text-dark text-decoration-none fw-semibold ms-3">
+                            Rankings
+                        </a>
 
-                            <a href="{{ path('app_categoryEstadisticas') }}"
-                               class="text-dark text-decoration-none fw-semibold ms-3">
-                                Estadisticas
-                            </a>
-                        {% endif %}
-                    </div>
+                        <a href="{{ path('app_reviewCharacter') }}"
+                           class="text-dark text-decoration-none fw-semibold ms-3">
+                            Reseñas
+                        </a>
 
-                    <div class="ms-auto d-flex align-items-center gap-3">
-                        {% if app.user %}
-                            <a href="{{ path('app_logout') }}"
-                               class="btn btn-outline-danger btn-sm px-3">
-                                Cerrar sesión
-                            </a>
-                        {% else %}
-                            <a href="{{ path('app_login') }}"
-                               class="btn btn-outline-dark btn-sm px-3">
-                                Iniciar Sesión
-                            </a>
+                        <a href="{{ path('app_categoryEstadisticas') }}"
+                           class="text-dark text-decoration-none fw-semibold ms-3">
+                            Estadisticas
+                        </a>
+                    {% endif %}
+                </div>
 
-                            <a href="{{ path('app_register') }}"
-                               class="btn btn-outline-dark btn-sm px-3">
-                                Registrarse
-                            </a>
-                        {% endif %}
-                    </div>
+                <div class="ms-auto d-flex align-items-center gap-3">
+                    {% if app.user %}
+                        <a href="{{ path('app_logout') }}"
+                           class="btn btn-outline-danger btn-sm px-3">
+                            Cerrar sesión
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}"
+                           class="btn btn-outline-dark btn-sm px-3">
+                            Iniciar Sesión
+                        </a>
+
+                        <a href="{{ path('app_register') }}"
+                           class="btn btn-outline-dark btn-sm px-3">
+                            Registrarse
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </nav>
@@ -80,6 +89,12 @@
         <h2 class="text-center my-4">
             {{ category.name }}
         </h2>
+
+        {% if userRanking %}
+            <div class="alert alert-info text-center">
+                Ya has hecho este ranking. Puedes modificarlo abajo.
+            </div>
+        {% endif %}
 
         <div class="container" style="margin-bottom: 30px">
             <div class="mx-auto" style="max-width: 600px;">
@@ -94,9 +109,28 @@
                         <div class="border border-2 border-secondary rounded
                             flex-grow-1 p-2 bg-light dropzone"
                              data-position="{{ i }}"
-                             style="min-height: 48px;">
+                             style="min-height: 100px;">
+                            {% set characterId = userPositions[i] ?? null %}
+                            {% if characterId %}
+                                {% for character in characters %}
+                                    {% if character.id == characterId %}
+                                        <div class="card shadow"
+                                             style="cursor: grab;width: 90px;border-radius: 15px;border: 2px solid #FFD90F;"
+                                             data-id="{{ character.id }}">
 
-                            <input type="hidden" name="ranking[{{ i }}]" value="">
+                                            <img src="https://cdn.thesimpsonsapi.com/500{{ character.portraitPath }}"
+                                                 class="img-fluid"
+                                                 alt="{{ character.name }}"
+                                                 title="{{ character.name }}"
+                                                 style="height: 90px;
+                                                object-fit: contain;
+                                                background-color: white;
+                                                border-radius: 15px;">
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            <input type="hidden" name="ranking[{{ i }}]" value="{{ characterId }}">
                         </div>
                     </div>
                 {% endfor %}
@@ -109,34 +143,48 @@
                  class="dropzone d-flex flex-wrap justify-content-center gap-3 mb-3">
 
                 {% for character in characters %}
-                    <div class="card shadow" style="cursor: grab;width: 90px;border-radius: 15px;border: 2px solid #FFD90F;" data-id="{{ character.id }}">
-                        <img src="https://cdn.thesimpsonsapi.com/500{{ character.portraitPath }}"
-                             class="img-fluid"
-                             alt="{{ character.name }}"
-                             title="{{ character.name }}"
-                             style="height: 90px;
+                    {% set alreadyUsed = false %}
+                    {% for pos in userPositions %}
+                        {% if pos == character.id %}
+                            {% set alreadyUsed = true %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if not alreadyUsed %}
+                        <div class="card shadow"
+                             style="cursor: grab;width: 90px;border-radius: 15px;border: 2px solid #FFD90F;"
+                             data-id="{{ character.id }}">
+
+                            <img src="https://cdn.thesimpsonsapi.com/500{{ character.portraitPath }}"
+                                 class="img-fluid"
+                                 alt="{{ character.name }}"
+                                 title="{{ character.name }}"
+                                 style="height: 90px;
                             object-fit: contain;
                             background-color: white;
                             border-radius: 15px;">
-                    </div>
+                        </div>
+                    {% endif %}
                 {% endfor %}
-
             </div>
         </div>
         <div class="container text-center mb-4">
             <button type="submit" class="btn btn-primary btn-lg px-5">
-                Enviar Ranking
+                {% if userRanking %}
+                    Actualizar Ranking
+                {% else %}
+                    Enviar Ranking
+                {% endif %}
             </button>
         </div>
     </form>
-        <footer class="mt-auto text-center py-3 bg-dark">
-            <div class="container">
-                <small class="text-light">
-                    © {{ "now"|date("Y") }} The Simpsons
-                </small>
-            </div>
-        </footer>
-    </div>
+    <footer class="mt-auto text-center py-3 bg-dark">
+        <div class="container">
+            <small class="text-light">
+                © {{ "now"|date("Y") }} The Simpsons
+            </small>
+        </div>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
     <script>
         document.querySelectorAll('.dropzone').forEach(zone => {

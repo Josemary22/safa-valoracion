@@ -25,6 +25,9 @@
                         <a href="{{ path('categories') }}" class="text-dark text-decoration-none fw-semibold ms-3">
                             Crear categoría
                         </a>
+                        <a href="{{ path('app_admin_panel') }}" class="text-dark text-decoration-none fw-semibold ms-3">
+                            Panel Administración
+                        </a>
                     {% endif %}
 
                     {% if is_granted('ROLE_USER') %}
@@ -147,7 +150,7 @@
                 </div>
             {% endif %}
 
-            <h4 class="fw-bold mb-3">Comentarios de otros fans</h4>
+            <h4 class="fw-bold mb-3">Comentarios de otros fans ({{ countReviews }} reseñas)</h4>
             {% for review in character.reviews %}
                 <div class="card mb-3 shadow-sm border-0" style="border-radius:18px;">
                     <div class="card-body p-3">

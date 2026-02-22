@@ -4,6 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Character;
 use App\Entity\Phrases;
+use App\Repository\CategoryRepository;
+use App\Repository\CharacterRepository;
+use App\Repository\RankingRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,6 +17,24 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class AdminController extends AbstractController
 {
+    #[IsGranted('ROLE_ADMIN')]
+    #[Route('/admin', name: 'app_admin_panel')]
+    public function panel(
+        UserRepository $userRepository,
+        RankingRepository $rankingRepository,
+        CategoryRepository $categoryRepository,
+        CharacterRepository $characterRepository
+    ): Response
+    {
+        return $this->render('admin/admin.html.twig', [
+            'totalUsers' => $userRepository->count([]),
+            'totalRankings' => $rankingRepository->count([]),
+            'totalCategories' => $categoryRepository->count([]),
+            'totalCharacters' => $characterRepository->count([]),
+            'users' => $userRepository->findAll(),
+        ]);
+    }
+
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/admin/character/load', name: 'app_cargarDatos')]
     public function data_load(HttpClientInterface $httpClient, EntityManagerInterface $entityManager): Response

@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Categoría Ranking{% endblock %}
+{% block title %}Panel de Administración{% endblock %}
 
 {% block body %}
-    <div data-turbo="false" class="d-flex flex-column min-vh-100" style="background-color: white;">
+    <div class="d-flex flex-column min-vh-100" style="background-color: white;">
         <nav class="navbar navbar-expand-lg py-1" style="background-color: #f0f9ff;">
             <div class="container-fluid d-flex align-items-center px-3">
                 <div class="container-fluid d-flex align-items-center px-3">
@@ -77,57 +77,84 @@
             </div>
         </nav>
 
-        <h2 class="text-center display-4 my-4">
-            Categorías
-        </h2>
+        <div class="container mt-5 flex-grow-1">
+            <h1 class="text-center mb-4 display-4">
+                Panel de Administración
+            </h1>
 
-        <div class="container mb-5" style="margin-top: 30px">
-            <div class="row g-4">
-                {% for categoria in categorias %}
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                        <a href="{{ path('app_ranking', { id: categoria.id }) }}"
-                           class="text-decoration-none text-dark">
-                            <div class="card h-100 shadow-sm border-0" style="cursor: pointer;">
-                                <img
-                                    src="{{ categoria.image }}"
-                                    class="card-img-top"
-                                    alt="{{ categoria.name }}"
-                                    style="height: 320px; object-fit: cover;"
-                                >
+            <h3 class="mb-4 text-primary fw-bold">
+                Estadísticas globales
+            </h3>
 
-                                <div class="card-body text-center">
-                                    <h5 class="card-title fw-bold">
-                                        {{ categoria.name }}
-                                    </h5>
-                                </div>
+            <div class="row g-4 mb-5">
 
-                                {% if is_granted('ROLE_ADMIN') %}
-                                    <div class="d-flex justify-content-center gap-2 mb-3">
-                                        <a href="{{ path('category_edit', { id: categoria.id }) }}"
-                                           class="btn btn-warning btn-sm">
-                                            Editar
-                                        </a>
-
-                                        <form method="POST"
-                                              action="{{ path('category_delete', { id: categoria.id }) }}"
-                                              onsubmit="return confirm('¿Seguro que quieres eliminar esta categoría?');">
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                Eliminar
-                                            </button>
-                                        </form>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </a>
+                <div class="col-md-3">
+                    <div class="card shadow text-center p-4">
+                        <h4>Usuarios</h4>
+                        <h2 class="fw-bold">{{ totalUsers }}</h2>
                     </div>
-                {% else %}
-                    <div class="col-12 d-flex justify-content-center align-items-center" style="min-height: 50vh;">
-                        <p class="fw-bold display-5 text-center text-muted">
-                            No hay categorías disponibles
-                        </p>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card shadow text-center p-4">
+                        <h4>Rankings</h4>
+                        <h2 class="fw-bold">{{ totalRankings }}</h2>
                     </div>
-                {% endfor %}
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card shadow text-center p-4">
+                        <h4>Categorías</h4>
+                        <h2 class="fw-bold">{{ totalCategories }}</h2>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card shadow text-center p-4">
+                        <h4>Personajes</h4>
+                        <h2 class="fw-bold">{{ totalCharacters }}</h2>
+                    </div>
+                </div>
+
             </div>
+
+            <h3 class="mb-4 text-primary fw-bold">
+                Lista de Usuarios
+            </h3>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover shadow">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Roles</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% for role in user.roles %}
+                                    <span class="badge bg-secondary">
+                                    {{ role }}
+                                </span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">
+                                No hay usuarios registrados
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
         </div>
 
         <footer class="mt-auto text-center py-3 bg-dark">

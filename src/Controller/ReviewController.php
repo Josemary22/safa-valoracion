@@ -70,6 +70,7 @@ final class ReviewController extends AbstractController
             'character' => $character,
             'averageStars' => $averageStars,
             'userReview' => $review,
+            'countReviews' => $countReviews
         ]);
     }
 
